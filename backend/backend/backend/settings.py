@@ -34,10 +34,8 @@ DEBUG = True
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
-ALLOWED_HOSTS = ['*']
-
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*', 'https://f019-36-82-126-167.ngrok-free.app']
+AUTH_USER_MODEL = 'User.CustomUser'
 
 # Application definition
 
@@ -143,8 +141,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'User.authentication.LoginAuthentication',
-    ],
+        'rest_framework.authentication.BasicAuthentication'
+    ]
 }
 
 
