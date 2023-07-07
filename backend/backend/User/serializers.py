@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ReadOnlyField
 # from rest_framework.exceptions import bad_request
 from .models import Post
 
@@ -34,6 +34,22 @@ class UserRegisterSerializer(ModelSerializer):
 
 
 class PostsSerializers(ModelSerializer):
+    class Meta:
+        model = Post
+        fields = '__all__'
+        read_only_fields = ('id',)
+
+
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        exclude = ('password',)
+        read_only_fields = ('id',)
+
+
+class PostsGetSerializers(ModelSerializer):
+    user = UserSerializer()
+
     class Meta:
         model = Post
         fields = '__all__'

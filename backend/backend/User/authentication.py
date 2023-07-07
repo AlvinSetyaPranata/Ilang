@@ -10,7 +10,7 @@ from backend.settings import SECRET_KEY     # on production use .env
 # Move to .env on production
 AUTHORIZATION_HEADER = "JWT" 
 ALGORITHMS = ["HS256"]
-SAFE_METHODS = ["GET"]
+# SAFE_METHODS = ["GET"]
 
 
 class LoginAuthentication(authentication.BaseAuthentication):
@@ -87,12 +87,14 @@ class LoginAuthentication(authentication.BaseAuthentication):
 
 class MainAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        if request.method in SAFE_METHODS:
-            return None
-
         payload = self.get_user_id(request)
 
         user_id = payload["user_id"]
+
+        model = get_user_model()
+
+        if not model.objects.filter(id=user_id):
+            raise NotFound("Pengguna ditemukan")
 
         return self.get_user(user_id), payload
     

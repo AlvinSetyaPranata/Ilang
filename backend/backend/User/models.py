@@ -24,7 +24,7 @@ class CustomUser(AbstractBaseUser):
     phone = models.CharField(verbose_name="Phone", unique=True, max_length=20)
     bio = models.TextField(verbose_name="Bio", max_length=500)
     image = models.CharField(verbose_name="Image", max_length=300)    
-    timestamp = models.DateField(verbose_name="user-created", auto_now_add=True, editable=False)
+    timestamp = models.DateTimeField(verbose_name="user-created", auto_now_add=True, editable=False)
 
 
     def has_module_perms(self, app_label):

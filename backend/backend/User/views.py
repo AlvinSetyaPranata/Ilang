@@ -3,29 +3,27 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authentication import authenticate
 from rest_framework import status
-from rest_framework.permissions import  AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import  AllowAny, IsAuthenticated
+from rest_framework.pagination import PageNumberPagination 
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserRegisterSerializer, PostsSerializers
+from .serializers import UserRegisterSerializer, PostsSerializers, PostsGetSerializers
 from .models import Post
 from .authentication import LoginAuthentication, MainAuthentication
 from backend.settings import DEBUG
 
 
 # Create your views here.
-class PostView(APIView):
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+class PostView(ListAPIView):
+    queryset = Post.objects.all()
+    pagination_class = PageNumberPagination
+    serializer_class = PostsGetSerializers
+
+
+
+class AddPostView(APIView):
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (MainAuthentication,)
-
-
-    def get(self, req):
-        # get user from given id
-        posts = Post.objects.values_list()
-
-
-        p = list(zip(*posts))
-
-        return Response([])
-    
 
     def post(self, req):
         post_data = req.POST.copy()

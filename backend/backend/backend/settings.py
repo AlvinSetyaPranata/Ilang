@@ -26,6 +26,10 @@ DB_HOST = '127.0.0.1'
 DB_PORT = '5432'
 
 
+# Basic Configuration
+MAX_DATA = 5
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-l!=2ki026za8)*1-!+zd9f(om(5%qs&rl@#()ix9602x6f!@p#'
 
@@ -142,7 +146,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication'
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS' : [
+        'rest_framework.pagination.PageNumberPagination'
+    ],
+    'PAGE_SIZE': MAX_DATA
+
 }
 
 
