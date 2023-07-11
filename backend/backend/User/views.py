@@ -59,6 +59,7 @@ class UserLoginView(APIView):
 
     def post(self, req):
         post_data = reactjs_request_unpack(req)
+        
 
         if not "username" in post_data:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -87,7 +88,11 @@ class UserLoginView(APIView):
                 "refresh" : str(token)
             }
 
-            return Response(data, status=status.HTTP_200_OK)
+            res = Response(data, status=status.HTTP_200_OK)
+            res["Access-Control-Allow-Origin"] = "*"
+            res[""] = "*"
+
+            return res
         
 
         return Response()

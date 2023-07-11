@@ -33,7 +33,8 @@ class LoginAuthentication(authentication.BaseAuthentication):
 
      
      def authenticate(self, request):
-        data = request.POST
+        data = reactjs_request_unpack(request)
+
 
         token = request.META.get('HTTP_AUTHORIZATION')
 
