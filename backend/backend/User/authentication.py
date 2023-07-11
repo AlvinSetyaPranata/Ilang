@@ -6,6 +6,7 @@ from rest_framework.exceptions import (
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from backend.settings import SECRET_KEY     # on production use .env
+from .utils import reactjs_request_unpack
 
 # Move to .env on production
 AUTHORIZATION_HEADER = "JWT" 
@@ -15,8 +16,7 @@ ALGORITHMS = ["HS256"]
 
 class LoginAuthentication(authentication.BaseAuthentication):
      def auth_without_credentials(self, req):
-
-        data = req.POST
+        data = reactjs_request_unpack(req)
 
         user = get_user_model().objects.filter(username=data["username"])
 
@@ -35,10 +35,8 @@ class LoginAuthentication(authentication.BaseAuthentication):
      def authenticate(self, request):
         data = request.POST
 
-        if not data:
-            return None
-
         token = request.META.get('HTTP_AUTHORIZATION')
+
 
         if not token:
             return self.auth_without_credentials(request)

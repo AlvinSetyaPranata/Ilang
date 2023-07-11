@@ -11,10 +11,14 @@ from .serializers import UserRegisterSerializer, PostsSerializers, PostsGetSeria
 from .models import Post
 from .authentication import LoginAuthentication, MainAuthentication
 from backend.settings import DEBUG
+from .utils import reactjs_request_unpack
 
 
 # Create your views here.
 class PostView(ListAPIView):
+    class Meta:
+        ordering = ['-id']
+
     queryset = Post.objects.all()
     pagination_class = PageNumberPagination
     serializer_class = PostsGetSerializers
@@ -54,18 +58,18 @@ class UserLoginView(APIView):
 
 
     def post(self, req):
-        post_data = req.POST
+        post_data = reactjs_request_unpack(req)
+
+        if not "username" in post_data:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
 
         model = get_user_model()
-
-        # Authenticate       
-        if not "username" in post_data and not "password" in post_data:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         authenticate(req)
 
 
-        user = get_user_model().objects.filter(username=post_data["username"])
+        user = model.objects.filter(username=post_data["username"])
         
         if not user:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -83,7 +87,7 @@ class UserLoginView(APIView):
                 "refresh" : str(token)
             }
 
-            return Response(data, status=status.HTTP_202_ACCEPTED)
+            return Response(data, status=status.HTTP_200_OK)
         
 
         return Response()
