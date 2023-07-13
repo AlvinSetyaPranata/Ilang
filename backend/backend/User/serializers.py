@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from rest_framework.fields import empty
 from rest_framework.serializers import ModelSerializer, ReadOnlyField
 # from rest_framework.exceptions import bad_request
 from .models import Post
@@ -33,7 +34,7 @@ class UserRegisterSerializer(ModelSerializer):
         return user
 
 
-class PostsSerializers(ModelSerializer):
+class PostsAddSerializers(ModelSerializer):
     class Meta:
         model = Post
         fields = '__all__'
@@ -43,14 +44,22 @@ class PostsSerializers(ModelSerializer):
 class UserSerializer(ModelSerializer):
     class Meta:
         model = get_user_model()
-        exclude = ('password',)
-        read_only_fields = ('id',)
+        exclude = ('password', 'id', 'last_login')
+
+
+class PostUserSerializers(ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        exclude = ('password', 'id')
+        # read_only_fields = ('id',)
 
 
 class PostsGetSerializers(ModelSerializer):
-    user = UserSerializer()
+    user = PostUserSerializers()
 
     class Meta:
         model = Post
-        fields = '__all__'
+        exclude = ('founded',)
         read_only_fields = ('id',)
+
+

@@ -22,8 +22,7 @@ class CustomUser(AbstractBaseUser):
     username = models.CharField(verbose_name="Username", max_length=20, unique=True)
     email = models.EmailField(verbose_name="Email", default=0, unique=True)
     phone = models.CharField(verbose_name="Phone", unique=True, max_length=20)
-    bio = models.TextField(verbose_name="Bio", max_length=500)
-    image = models.CharField(verbose_name="Image", max_length=300)    
+    image = models.CharField(verbose_name="Image", max_length=300, blank=True, null=True)    
     timestamp = models.DateTimeField(verbose_name="user-created", auto_now_add=True, editable=False)
 
 
@@ -45,5 +44,8 @@ class CustomUser(AbstractBaseUser):
 class Post(models.Model):
     id = models.BigAutoField(verbose_name="id", primary_key=True, unique=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    content = models.TextField(verbose_name="content", max_length=1000)
-    date_created = models.DateTimeField(verbose_name="post-created" ,auto_now_add=True, editable=False)
+    name = models.CharField(verbose_name="title", max_length=100, default="Tidak ada judul")
+    announcement = models.TextField(verbose_name="content", max_length=1000, default="Tidak ada konten")
+    image = models.CharField(verbose_name="Image", max_length=300, null=True, blank=True)
+    founded = models.BooleanField(verbose_name="founded", default=False)
+    date = models.DateTimeField(verbose_name="post-created" ,auto_now_add=True, editable=False)

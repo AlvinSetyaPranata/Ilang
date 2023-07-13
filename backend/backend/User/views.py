@@ -7,21 +7,45 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import  AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination 
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserRegisterSerializer, PostsSerializers, PostsGetSerializers
+from .serializers import UserRegisterSerializer, PostsAddSerializers, PostsGetSerializers, UserSerializer
 from .models import Post
 from .authentication import LoginAuthentication, MainAuthentication
 from backend.settings import DEBUG
 from .utils import reactjs_request_unpack
+from .pagination import PostPagination
 
 
-# Create your views here.
-class PostView(ListAPIView):
+
+
+
+class PostFoundView(ListAPIView):
     class Meta:
-        ordering = ['-id']
+        ordering = ['date_created']
+
 
     queryset = Post.objects.all()
-    pagination_class = PageNumberPagination
+    pagination_class = PostPagination
     serializer_class = PostsGetSerializers
+
+
+    def get_queryset(self):
+        return self.queryset.filter(founded=True)
+
+
+class PostLostView(ListAPIView):
+    class Meta:
+        ordering = ['date_created']
+
+
+    queryset = Post.objects.all()
+    pagination_class = PostPagination
+    serializer_class = PostsGetSerializers
+
+
+    def get_queryset(self):
+        return self.queryset.filter(founded=False)
+
+
 
 
 
@@ -36,15 +60,16 @@ class AddPostView(APIView):
         user_id = MainAuthentication().get_user_id(req)["user_id"]
         post_data["user"] = user_id
 
-        serializer = PostsSerializers(data=post_data)
+
+        serializer = PostsAddSerializers(data=post_data)
 
         if not serializer.is_valid(raise_exception=DEBUG):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({"messege" : "Authentication Fail"}, status=status.HTTP_400_BAD_REQUEST)
         
         serializer.save()
 
 
-        return Response(status=status.HTTP_201_CREATED)
+        return Response({"message" : "Data Has Been Created"}, status=status.HTTP_201_CREATED)
 
 
     
@@ -84,13 +109,14 @@ class UserLoginView(APIView):
             token = RefreshToken.for_user(user)
 
             data = {
+                "message" : "Authentication Success",
                 "access" : str(token.access_token),
-                "refresh" : str(token)
+                "refresh" : str(token),
+                "data" : UserSerializer(user).data
             }
 
             res = Response(data, status=status.HTTP_200_OK)
             res["Access-Control-Allow-Origin"] = "*"
-            res[""] = "*"
 
             return res
         
@@ -107,14 +133,17 @@ class UserRegisterView(APIView):
 
 
     def post(self, req):
-        post_data = req.POST
+        post_data = reactjs_request_unpack(req)
 
         serialiezer = UserRegisterSerializer(data=post_data)
 
 
         if not serialiezer.is_valid(raise_exception=DEBUG):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message" : "Register Fail"}, status=status.HTTP_400_BAD_REQUEST)
 
         serialiezer.save()
+        
+        res = Response({"message" : "Register Success"}, status=status.HTTP_201_CREATED)
+        res["Access-Control-Allow-Origin"] = "*"
 
-        return Response(status=status.HTTP_201_CREATED)
+        return res
